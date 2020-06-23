@@ -1,0 +1,75 @@
+import numpy as np 
+from math import gamma, pi, inf
+def hs(x):   # Función Heaviside
+    if x>=0:
+        return 1
+    else:
+        return 0
+
+def f(x,y):
+    o=1.0e-6
+    s12=2
+    dx= ((4*pi)**(o-2)/(gamma(1-o)))*s12**(-o)*(x)**(-2*o)       #el factor d[xi]
+    dy=(y*(1-y))**(-o)                                         #el factor d[vi]  
+    return dx*dy*hs(1-2*y)*hs((1-2*y)/(1-y)-x)*(1/x)*(y*(1-y))**(-1)*(((1-x)/(1-(1-y)*x))**(-2*o)-1)
+ax = 1.0e-6 # lower limit of x
+bx = 1# upper limit of x
+ay = 1.0e-6 # lower limit of y
+by = 0.9999 # upper limit of y
+nx = 500# number of divisions in x domain
+ny = 500 # number of divisions in y domain
+hx = (bx-ax) / nx # x step size
+hy = (by-ay) / ny # y step size
+
+S2 = 0# initialization of summation
+for i in range(0, nx+1):# loop of the outer integral
+    if i==0 or i==nx :
+        p = 1# factor of the first and last terms
+    elif i % 2 == 1 :
+        p = 4# factor for terms multiplied by 4
+    else:
+        p = 2# factor for terms multiplied by 2
+    for j in range(0, ny+1): # loop of the inner integral
+        if j==0 or j==ny :
+            q = 1# factor of the first and last terms
+        elif j % 2 == 1 :
+            q = 4# factor for terms multiplied by 4
+        else:
+            q = 2# factor for terms multiplied by 2
+        S2 += p*q * f(ax + j*hx, ay + i*hy)
+Integral2 = hx*hy/9 * S2
+##############
+def g(x,y):
+    o=1.0e-6
+    s12=2
+    dx= ((4*pi)**(o-2)/(gamma(1-o)))*s12**(-o)*(1/x)**(-2*o)       #el factor d[xi]
+    dy=(y*(1-y))**(-o)                                         #el factor d[vi]  
+    return dx*dy*hs(1-2*y)*hs((1-2*y)/(1-y)-(1/x))*x*(y*(1-y))**(-1)*(((1-(1/x))/(1-(1-y)*(1/x)))**(-2*o)-1)*x**2
+ax = 1.0e-6 # lower limit of x
+bx = 0.999 # upper limit of x
+ay = 1.0e-6 # lower limit of y
+by = 0.9999 # upper limit of y
+nx = 500    # number of divisions in x domain
+ny = 500    # number of divisions in y domain
+hx = (bx-ax) / nx # x step size
+hy = (by-ay) / ny # y step size
+
+S = 0# initialization of summation
+for i in range(0, nx+1):# loop of the outer integral
+    if i==0 or i==nx :
+        p = 1# factor of the first and last terms
+    elif i % 2 == 1 :
+        p = 4# factor for terms multiplied by 4
+    else:
+        p = 2# factor for terms multiplied by 2
+    for j in range(0, ny+1): # loop of the inner integral
+        if j==0 or j==ny :
+            q = 1
+        elif j % 2 == 1 :
+            q = 4
+        else:
+            q = 2
+        S += p*q * g(ax + j*hx, ay + i*hy)
+Integral = hx*hy/9 * S
+R=Integral+Integral2
+print("Integral=", R)
